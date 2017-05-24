@@ -1,0 +1,13 @@
+- hosts: redis
+  roles:
+  - docker-app-server
+  - redis
+  tags:
+  - redis
+
+- hosts: redis-sentinel
+  roles:
+  - docker-app-server
+  - redis-sentinel
+  tags:
+  - redis-sentinel
