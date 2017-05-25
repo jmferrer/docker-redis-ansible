@@ -1,0 +1,22 @@
+- name: Destroy redis
+  docker:
+    name: redis
+    image: redis:3
+    state: absent
+
+- name: Start redis
+  docker:
+    name: redis
+    image: redis:3
+    state: started
+    restart_policy: always
+    expose: 6379
+    ports: "6379:6379"
+
+- name: Set master as master
+  shell: docker exec -it redis redis-cli slaveof no one
+  when: inventory_hostname == groups.redis[0]
+
+- name: Configure slave replication
+  shell: docker exec -it redis redis-cli slaveof {{ hostvars[groups.redis[0]].ansible_default_ipv4.address }} 6379
+  when: inventory_hostname != groups.redis[0]

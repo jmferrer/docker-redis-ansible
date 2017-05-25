@@ -1,0 +1,20 @@
+- name: Destroy redis-sentinel
+  docker:
+    name: redis-sentinel
+    image: jmferrer/redis-sentinel
+    state: absent
+
+- name: Start redis-sentinel
+  docker:
+    name: redis-sentinel
+    image: jmferrer/redis-sentinel
+    state: started
+    restart_policy: always
+    expose: 26379
+    ports: "26379:26379"
+    env:
+      SENTINEL_QUORUM: 2
+      SENTINEL_DOWN_AFTER: 5000
+      SENTINEL_FAILOVER: 5000
+      MASTER_HOST: "{{ hostvars[groups.redis[0]].ansible_default_ipv4.address }}"
+      ANNOUNCE_IP: "{{ ansible_default_ipv4.address }}"
